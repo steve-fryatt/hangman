@@ -1,0 +1,562 @@
+REM !RunImage for !Hangman
+REM (c) Stephen Fryatt 1996
+REM
+REM Version 0.01 (26 Dec 1996)
+:
+REM Load Wimp Library, initialise set the error handler and poll until asked to exit.
+:
+ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL;" ***" : END
+:
+LIBRARY "BASIC:WimpLib"
+:
+PROCinitialise
+:
+ON ERROR IF FNerror("Hangman")=2 THEN quit%=TRUE
+:
+WHILE NOT quit%
+ PROCpoll
+ENDWHILE
+:
+PROCclose_down
+:
+END
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCinitialise
+REM Initialise ourselves, internally and for the wimp.
+:
+REM Set up quit flags and data blocks.
+:
+quit%=FALSE
+DIM a% 255, b% 4000, q% 255
+:
+REM Register self with the wimp, asking for messages in q% to be sent to us.
+:
+$b%="TASK"
+!q%=&400C1
+q%!4=0
+SYS "Wimp_Initialise",300,!b%,"Hangman",q%
+:
+REM Load window templates and define windows.
+:
+ind_size%=400
+DIM ind_data% ind_size%
+:
+PROCopen_templates("<Hangman$Dir>.Templates")
+PROCload_template("Main",b%,ind_data%,ind_size%,-1)
+SYS "Wimp_CreateWindow",,b% TO main_wind%
+PROCload_template("Info",b%,ind_data%,ind_size%,-1)
+SYS "Wimp_CreateWindow",,b% TO info_wind%
+PROCload_template("Options",b%,ind_data%,ind_size%,-1)
+SYS "Wimp_CreateWindow",,b% TO options_wind%
+PROCclose_templates
+:
+REM Load menu definitions and create menus.
+:
+!b%=info_wind%
+PROCload_menu_block("<Hangman$Dir>.Menus", b%)
+main_menu%=!b%
+menu_up%=0 : REM This will contain the current menu.
+:
+REM Find the font we need to display the hangman text.
+:
+font_name$="Corpus.Bold"
+font_size1%=32
+font_size2%=12
+SYS "Font_FindFont",,font_name$,font_size1%*16,font_size1%*16 TO display_font%
+SYS "Font_FindFont",,font_name$,font_size2%*16,font_size2%*16 TO small_font%
+:
+REM Do the non-wimp initialiseation.
+:
+SYS "Spell_ImpressionInfo" TO ,dictionary_size%
+:
+min_word_length%=12
+max_word_length%=15
+number_of_guesses%=10
+:
+letter_colour%=7
+newletter_colour%=11
+fillin_colour%=10
+win_colour%=8
+dashmask_colour%=15
+:
+PROCpick_new_word(min_word_length%,max_word_length%,number_of_guesses%)
+:
+REM Open the main window
+:
+PROCopen_window(main_wind%)
+PROCput_caret_at_end(main_wind%,-1)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCclose_down
+REM Shut down the application: deregister from the wimp and lose any outline fonts.
+:
+SYS "Font_LoseFont",display_font%
+SYS "Font_LoseFont",small_font%
+SYS "Wimp_CloseDown"
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCrebind_fonts
+SYS "Font_LoseFont",display_font%
+SYS "Font_LoseFont",small_font%
+SYS "Font_FindFont",,font_name$,font_size1%*16,font_size1%*16 TO display_font%
+SYS "Font_FindFont",,font_name$,font_size2%*16,font_size2%*16 TO small_font%
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCpoll
+REM Poll the wimp and take any necessary action.
+:
+SYS "Wimp_Poll",0,b% TO reason%
+:
+CASE reason% OF
+ WHEN 1     : PROCwindow_redraw
+ WHEN 2     : SYS "Wimp_OpenWindow",,b%
+ WHEN 3     : SYS "Wimp_CloseWindow",,b% : quit%=TRUE
+ WHEN 6     : PROChandle_mouse_clicks(b%!12,b%!16,b%!8,!b%,b%!4)
+ WHEN 8     : PROChandle_key_presses(b%!24,!b%,b%!4)
+ WHEN 9     : PROChandle_menu_selections(!b%,b%!4,b%!8,b%!12)
+ WHEN 17,18 : PROChandle_wimp_message(b%!16)
+ENDCASE
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROChandle_mouse_clicks(window%,icon%,buttons%,mouse_x%,mouse_y%)
+CASE window% OF
+ WHEN main_wind%
+  CASE buttons% OF
+   WHEN 1,4
+    CASE icon% OF
+     WHEN 1
+      IF playing% THEN
+       PROCresign
+      ELSE
+       PROCpick_new_word(min_word_length%,max_word_length%,number_of_guesses%)
+      ENDIF
+     OTHERWISE : PROCput_caret_at_end(main_wind%,-1)
+    ENDCASE
+   WHEN 2 : PROCdisplay_menu(main_menu%,mouse_x%,mouse_y%)
+  ENDCASE
+ WHEN options_wind%
+  CASE buttons% OF
+   WHEN 1
+    CASE icon% OF
+     WHEN 2  : PROCincrement_icon_contents(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
+     WHEN 3  : PROCdecrement_icon_contents(options_wind%,1,3)
+     WHEN 6  : PROCincrement_icon_contents(options_wind%,5,22)
+     WHEN 7  : PROCdecrement_icon_contents(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
+     WHEN 10 : PROCincrement_icon_contents(options_wind%,9,19)
+     WHEN 11 : PROCdecrement_icon_contents(options_wind%,9,1)
+     WHEN 14 : PROCstore_options
+    ENDCASE
+   WHEN 4
+    CASE icon% OF
+     WHEN 2  : PROCdecrement_icon_contents(options_wind%,1,3)
+     WHEN 3  : PROCincrement_icon_contents(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
+     WHEN 6  : PROCdecrement_icon_contents(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
+     WHEN 7  : PROCincrement_icon_contents(options_wind%,5,22)
+     WHEN 10 : PROCdecrement_icon_contents(options_wind%,9,1)
+     WHEN 11 : PROCincrement_icon_contents(options_wind%,9,19)
+     WHEN 13 : PROCclose_window(options_wind%)
+     WHEN 14 : PROCstore_options : PROCclose_window(options_wind%)
+    ENDCASE
+  ENDCASE
+ENDCASE
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROChandle_menu_selections(s1%,s2%,s3%,s4%)
+LOCAL adjust%
+:
+REM Set adjust% if the menu must be re-displayed (ie adjust selection).
+:
+SYS "Wimp_GetPointerInfo",,q%
+adjust%=(q%!8=1)
+:
+CASE menu_up% OF
+ WHEN main_menu%
+  CASE s1% OF
+   WHEN 1 : PROCshow_options(!q%,q%!4)
+  ENDCASE
+ENDCASE
+:
+IF adjust% THEN PROCdisplay_menu(menu_up%,0,0)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROChandle_key_presses(key%,window%,icon%)
+CASE TRUE OF
+ WHEN FNalphabetic(CHR$(key%)) : PROCmake_turn(CHR$(key%))
+ WHEN key%=13        : IF playing% THEN
+                        PROCresign
+                       ELSE
+                        PROCpick_new_word(min_word_length%,max_word_length%,number_of_guesses%)
+                       ENDIF
+ OTHERWISE : SYS "Wimp_ProcessKey",key%
+ENDCASE
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROChandle_wimp_message(message%)
+ CASE message% OF
+  WHEN 0      : quit%=TRUE
+  WHEN &400C1 : PROCrebind_fonts
+ ENDCASE
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCwindow_redraw
+REM Redraw the main window: the hangman word is printed up 'by hand' to allow the
+REM different colours to be shown.  The display offsets are calculated once for the
+REM word when the new word is chosen.
+REM This could be optimised a lot :-)
+REM Can't notice on a RiscPC :->
+:
+LOCAL more%,loop%
+SYS "Wimp_RedrawWindow",,b% TO more%
+:
+ox%=b%!4-b%!20
+oy%=b%!16-b%!24
+:
+WHILE more%
+ SYS "Font_SetFont",display_font%
+ SYS "Wimp_SetFontColours",,1,dashmask_colour%
+ SYS "Font_Paint",,word_mask$,&10,ox%+display_offset_x%,oy%+display_offset_y%
+ SYS "Wimp_SetFontColours",,1,word_colour%
+ SYS "Font_Paint",,word_fill$,&10,ox%+display_offset_x%,oy%+display_offset_y%
+ SYS "Wimp_SetFontColours",,1,highlight_colour%
+ SYS "Font_Paint",,word_last$,&10,ox%+display_offset_x%,oy%+display_offset_y%
+ SYS "Font_SetFont",small_font%
+ SYS "Wimp_SetFontColours",,1,7
+ SYS "Font_Paint",,used_letters1$,&10,ox%+12,oy%-164
+ SYS "Font_Paint",,used_letters2$,&10,ox%+12,oy%-192
+ SYS "Wimp_SetColour",8
+ IF turns_left%>0 THEN
+  FOR loop%=1 TO turns_left%
+   RECTANGLE FILL ox%+268+(loop%-1)*28,oy%-196,20,50
+  NEXT loop%
+ ENDIF
+ SYS "Wimp_GetRectangle",,b% TO more%
+ENDWHILE
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCpick_new_word(min%,max%,guesses%)
+REM Pick a new word with a length within the limits and set it as the new word.
+:
+PROCset_new_word(FNget_word(min%,max%),guesses%)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF FNget_word(min%,max%)
+REM Pick a word from the Impression dictionary which has a length between the limits
+REM specified.
+:
+LOCAL word%,word$
+:
+SYS "Hourglass_On"
+:
+REPEAT
+ SYS "Spell_GetWord",RND(dictionary_size%) TO ,word%
+ word$=FNzero_string(word%)
+UNTIL LEN(word$)>=min% AND LEN(word$)<=max%
+:
+SYS "Hourglass_Off"
+:
+=word$
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCset_new_word(word$,guesses%)
+REM Set the given word as the new word to be guessed.  Reset all the variables.
+:
+LOCAL loop%,letter$
+:
+REM Blank the current word, and reset the used letters flags and print lists.  The
+REM number of letters correctly guessed and the number of turns left are also reset.
+:
+current_word$=""
+used_letters%=0
+used_letters1$=STRING$(13," ")
+used_letters2$=STRING$(13," ")
+letters_hit%=0
+turns_left%=guesses%
+:
+REM Go through the word supplied, and if each letter is alphabetic, convert it to
+REM upper case and add it to the new word.
+:
+FOR loop%=1 TO LEN(word$)
+ letter$=CHR$(ASC(MID$(word$,loop%,1)) AND &DF)
+ IF FNalphabetic(letter$) THEN
+  current_word$+=letter$
+ ENDIF
+NEXT loop%
+:
+REM word_mask$ contains the dashes for unguessed letters, word_fill$ and word_last$
+REM contain a space for each letter.
+:
+word_mask$=STRING$(LEN(current_word$),"™") : REM The " " is in fact a "-"; zap doesn't show it!
+word_fill$=STRING$(LEN(current_word$)," ")
+word_last$=STRING$(LEN(current_word$)," ")
+:
+REM Calculate the display position of the new word.  The width of the text in the current
+REM fint is caluculated and the offsets within the display icon are calculated.
+:
+SYS "Font_Converttopoints",,1064 TO ,box_x%
+SYS "Font_SetFont",display_font%
+SYS "Font_StringWidth",,current_word$,box_x%,font_size1%*16,32,LEN(current_word$) TO ,,box_x%
+SYS "Font_ConverttoOS",,box_x%,font_size1%*1000 TO ,width%,height%
+display_offset_x%=(1064-width%)/2+4
+display_offset_y%=-128+((128-height%)/2)+14
+:
+REM Finally set the game in motion and force the window to update to show the new word.
+:
+playing%=TRUE
+$FNicon_indirection(main_wind%,1)="Resign"
+word_colour%=letter_colour%
+highlight_colour%=newletter_colour%
+:
+PROCforce_icon_redraw(main_wind%,0)
+PROCforce_icon_redraw(main_wind%,1)
+PROCforce_icon_redraw(main_wind%,2)
+PROCforce_icon_redraw(main_wind%,3)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCmake_turn(letter$)
+REM This procedure handles a complete turn.  We only do it if there is a game in progress!
+:
+IF playing% THEN
+ :
+ REM Play the letter, then if we have run out of turns resign otherwise if the word is
+ REM complete end.
+ :
+ PROCplay_letter(letter$)
+ IF turns_left%=0 THEN playing%=FALSE : PROCresign
+ IF letters_hit%=LEN(current_word$) THEN PROCfinish
+ENDIF
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCfinish
+REM This procedure completes a finished word.
+:
+REM Stop the game, update the button and the highlight colour.
+:
+playing%=FALSE
+$FNicon_indirection(main_wind%,1)="New Word"
+word_colour%=win_colour%
+highlight_colour%=win_colour%
+:
+REM Redraw the button.
+:
+PROCforce_icon_redraw(main_wind%,1)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCresign
+REM This procedure abandons a word; either due to running out of guesses or because the
+REM player asked to!
+:
+LOCAL loop%,letters_hit_now%
+:
+REM Stop the game, show the highlighs in orange, and update the button.
+:
+playing%=FALSE
+$FNicon_indirection(main_wind%,1)="New Word"
+word_colour%=letter_colour%
+highlight_colour%=fillin_colour%
+:
+REM Go through the word_last$ copying any letters into the correct places in the
+REM word_fill$ line.  This makes those letters in red now appear in black.
+:
+FOR loop%=1 TO LEN(current_word$)
+ IF MID$(word_last$,loop%,1)<>" " THEN MID$(word_fill$,loop%,1)=MID$(word_last$,loop%,1)
+NEXT loop%
+:
+REM Reset the red letters and rmove the mask dashes.
+:
+word_mask$=STRING$(LEN(current_word$)," ")
+word_last$=STRING$(LEN(current_word$)," ")
+:
+REM Go through the word as guessed so far and put unguessed letters into word_last$ to
+REM show up in highlight.
+:
+FOR loop%=1 TO LEN(current_word$)
+ IF MID$(word_fill$,loop%,1)=" " THEN MID$(word_last$,loop%,1)=MID$(current_word$,loop%,1)
+NEXT loop%
+:
+REM Redraw the screen.
+:
+PROCforce_icon_redraw(main_wind%,0)
+PROCforce_icon_redraw(main_wind%,1)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCplay_letter(letter$)
+REM This procedure takes a letter and plays it against the current word.
+:
+LOCAL loop%,letters_hit_now%
+:
+REM Go through the word_last$ copying any letters into the correct places in the
+REM word_fill$ line.  This makes those letters in red now appear in black.
+:
+FOR loop%=1 TO LEN(current_word$)
+ IF MID$(word_last$,loop%,1)<>" " THEN MID$(word_fill$,loop%,1)=MID$(word_last$,loop%,1)
+NEXT loop%
+:
+REM Reset the red letters.
+:
+word_last$=STRING$(LEN(current_word$)," ")
+:
+REM Put letter$ into upper case.
+:
+letter$=CHR$(ASC(letter$) AND &DF)
+:
+REM If letter$ has not yet been used, then play it.
+:
+IF NOT FNletter_used(letter$) THEN
+ :
+ REM Mark the letter as having been played, and zero a count to see how many letters we
+ REM have hit in this turn.
+ :
+ PROCmark_off_letter(letter$)
+ letters_hit_now%=0
+ :
+ REM For each letter in the word: if it is a hit, remove the dah from the mask, add the
+ REM letter in red (word_last$) and count the hit.
+ :
+ FOR loop%=1 TO LEN(current_word$)
+  IF MID$(current_word$,loop%,1)=letter$ THEN
+   MID$(word_mask$,loop%,1)=" "
+   MID$(word_last$,loop%,1)=letter$
+   letters_hit_now%+=1
+  ENDIF
+ NEXT loop%
+ :
+ REM If no letters were hit (ie. a wrong guess), show the letter below, deduct a turn,
+ REM and update the turn display.
+ :
+ IF letters_hit_now%=0 THEN
+  PROCshow_letter_as_used(letter$)
+  turns_left%-=1
+  PROCforce_icon_redraw(main_wind%,3)
+ ENDIF
+ :
+ REM Total the number of letters found.
+ :
+ letters_hit%+=letters_hit_now%
+ENDIF
+:
+REM Redraw the word.
+:
+PROCforce_icon_redraw(main_wind%,0)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF FNalphabetic(l$)
+=INSTR("ABCDEFGHIJKLMNOPQRSTUVWXYZ",CHR$(ASC(l$) AND &DF))<>0
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF FNletter_used(l$)
+=(((used_letters% AND (1 << ((ASC(l$) AND &DF) - 65))) <> 0) AND FNalphabetic(l$))
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCmark_off_letter(l$)
+IF FNalphabetic(l$) THEN used_letters%=used_letters% OR (1 << ((ASC(l$) AND &DF) - 65))
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCshow_letter_as_used(l$)
+l$=CHR$(ASC(l$) AND &DF)
+IF FNalphabetic(l$) THEN
+ IF l$<="M" THEN
+  MID$(used_letters1$,ASC(l$)-64,1)=l$
+ ELSE
+  MID$(used_letters2$,ASC(l$)-77,1)=l$
+ ENDIF
+ PROCforce_icon_redraw(main_wind%,2)
+ENDIF
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCshow_options(x%,y%)
+$FNicon_indirection(options_wind%,1)=STR$(min_word_length%)
+$FNicon_indirection(options_wind%,5)=STR$(max_word_length%)
+$FNicon_indirection(options_wind%,9)=STR$(number_of_guesses%)
+PROCopen_window_at(options_wind%,x%,y%)
+ENDPROC
+:
+:
+REM ********************************************************************************************
+:
+:
+DEF PROCstore_options
+min_word_length%=VAL($FNicon_indirection(options_wind%,1))
+max_word_length%=VAL($FNicon_indirection(options_wind%,5))
+number_of_guesses%=VAL($FNicon_indirection(options_wind%,9))
+ENDPROC

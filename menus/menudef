@@ -1,0 +1,12 @@
+/* Menus for Hangman
+ * (c) Stephen Fryatt, 1996
+ *
+ * v0.01 (27 Dec 1996)
+ */
+
+menu (main_menu, "Hangman") {
+  item ("Info") {
+    d_box (program_info);
+  }
+  item ("Options...");
+}

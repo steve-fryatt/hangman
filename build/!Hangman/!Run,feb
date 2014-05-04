@@ -1,0 +1,13 @@
+| !Run file for !Hangman
+| (c) Stephen Fryatt 1996
+|
+| Version 0.01 (26 Dec 1996)
+
+Set Hangman$Dir <Obey$Dir>
+
+IconSprites <Hangman$Dir>.!Sprites
+
+RMEnsure ImpressionSpell 0.00 Error Hangman requires Impression Spell module to be loaded first.
+
+Wimpslot -min 24K -max 24K
+Run <Hangman$Dir>.!RunImage
