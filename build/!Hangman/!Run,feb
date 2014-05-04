@@ -9,5 +9,5 @@ IconSprites <Hangman$Dir>.!Sprites
 
 RMEnsure ImpressionSpell 0.00 Error Hangman requires Impression Spell module to be loaded first.
 
-Wimpslot -min 24K -max 24K
+Wimpslot -min 128K -max 128K
 Run <Hangman$Dir>.!RunImage

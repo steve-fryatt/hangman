@@ -40,12 +40,14 @@ $b%="TASK"
 q%!4=0
 SYS "Wimp_Initialise",300,!b%,"Hangman",q%
 :
+resource_path$=FNterritory_resources("<Hangman$Dir>.Resources")
+:
 REM Load window templates and define windows.
 :
 ind_size%=400
 DIM ind_data% ind_size%
 :
-PROCopen_templates("<Hangman$Dir>.Templates")
+PROCopen_templates(resource_path$+"Templates")
 PROCload_template("Main",b%,ind_data%,ind_size%,-1)
 SYS "Wimp_CreateWindow",,b% TO main_wind%
 PROCload_template("Info",b%,ind_data%,ind_size%,-1)
@@ -57,7 +59,7 @@ PROCclose_templates
 REM Load menu definitions and create menus.
 :
 !b%=info_wind%
-PROCload_menu_block("<Hangman$Dir>.Menus", b%)
+PROCload_menu_block(resource_path$+"Menus", b%)
 main_menu%=!b%
 menu_up%=0 : REM This will contain the current menu.
 :
