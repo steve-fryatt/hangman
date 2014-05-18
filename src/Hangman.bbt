@@ -9,6 +9,11 @@ ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL
 :
 LIBRARY "BASIC:WimpLib"
 :
+REM These values get replaced by tokenize.
+:
+build_version$ = "1.00"
+build_date$ = "19 Jun 2002"
+:
 PROCinitialise
 :
 ON ERROR IF FNerror("Hangman")=2 THEN quit%=TRUE
@@ -55,6 +60,9 @@ SYS "Wimp_CreateWindow",,b% TO info_wind%
 PROCload_template("Options",b%,ind_data%,ind_size%,-1)
 SYS "Wimp_CreateWindow",,b% TO options_wind%
 PROCclose_templates
+:
+$FNicon_indirection(info_wind%,4)=CHR$(169) + " Stephen Fryatt, 1996-" + MID$(build_date$, 8)
+$FNicon_indirection(info_wind%,6)=build_version$+" ("+build_date$+")"
 :
 REM Load menu definitions and create menus.
 :
