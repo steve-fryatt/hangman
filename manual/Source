@@ -10,7 +10,7 @@
 =============================================================================
 Hangman - Desktop Word Game                                      Version $$version$$
 
-(c) Stephen Fryatt, 1996                       $$date$$
+(c) Stephen Fryatt, 1996-2014                  $$date$$
 =============================================================================
 </literal>
 
@@ -20,13 +20,17 @@ Hangman - Desktop Word Game                                      Version $$versi
 
 <chapter title="License" file="License">
 
-<cite>Hangman</cite> is <strong>Freeware</strong>.  Copyright is held by the author, Stephen Fryatt, 1996.
+<cite>Hangman</cite> is licensed under the EUPL, Version&nbsp;1.1 only (the &ldquo;Licence&rdquo;); you may not use this work except in compliance with the Licence.
 
-<cite>Hangman</cite> may be copied freely, so long as it remains unaltered with all its files and documentation intact.
+You may obtain a copy of the Licence at <link ref="#url http://joinup.ec.europa.eu/software/page/eupl">http://joinup.ec.europa.eu/software/page/eupl</link>
 
-If you wish to distribute <cite>Hangman</cite>, please contact me to get my permission. This is so that I can ensure that you have the latest version available.  <cite>Hangman</cite> may not be sold, although Public Domain libraries may charge for the cost of discs.
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an &ldquo;<strong>as is</strong>&rdquo; basis, <strong>without warranties or conditions of any kind</strong>, either express or implied.
 
-No guarantee is made as to the suitability or stability of <cite>Hangman</cite> for any particular purpose.  No liability can be accepted by the author for any loss or damage caused by the use of <cite>Hangman</cite>.
+See the Licence for the specific language governing permissions and limitations under the Licence.
+
+The source for <cite>Hangman</cite> can be found alongside this binary download, at <link ref="#url http://www.stevefryatt.org.uk/software">http://www.stevefryatt.org.uk/software</link>
+
+The necessary libraries and build tools can be found at <link ref="#url http://www.stevefryatt.org.uk/software/build">http://www.stevefryatt.org.uk/software/build</link>
 
 </chapter>
 
@@ -48,11 +52,11 @@ To install <cite>Hangman</cite> on a hard disc, copy the <file>!Hangman</file> a
 
 <chapter title="Using Hangman" file="Use">
 
-Double click on <file>!Hangman</file> to open the game window and ensure that the game has input focus by clicking within the window if necessary.  At the top of the window a row of light blue dashes indicate the word to be guessed, while below these are a row of dark blue blocks which show how many chances are left.
+Double click on <file>!Hangman</file> to open the game window and ensure that the game has input focus by clicking within the window if necessary. At the top of the window a row of light blue dashes indicate the word to be guessed, while below these are a row of dark blue blocks which show how many chances are left.
 
-To guess a letter, press the key on the keyboard.  If the letter is correct it will be placed in the correct position in the word; the last letter entered is highlighted in red.  If the letter was wrong, one chance will be lost and the letter will be shown in the small box bottom left.
+To guess a letter, press the key on the keyboard. If the letter is correct it will be placed in the correct position in the word; the last letter entered is highlighted in red. If the letter was wrong, one chance will be lost and the letter will be shown in the small box bottom left.
 
-If the player correctly guesses the word, then the letters will turn blue to show this.  If the chances run out or the player resigns (by clicking on the <icon>Resign</icon> icon or pressing <key>return</key>) then the missing letters will be filled in in green.
+If the player correctly guesses the word, then the letters will turn blue to show this. If the chances run out or the player resigns (by clicking on the <icon>Resign</icon> icon or pressing <key>return</key>) then the missing letters will be filled in in green.
 
 To start a new word, click on the <icon>New&nbsp;Word</icon> icon or press <key>return</key>.
 
@@ -62,7 +66,7 @@ To start a new word, click on the <icon>New&nbsp;Word</icon> icon or press <key>
 
 <chapter title="Game Options" file="Options">
 
-The <menu>Options...</menu> item in the menu leads to a small window allowing the level of the game to be changed.  The entries are fairly self-explanatory: ckick <icon>OK</icon> to set.
+The <menu>Options...</menu> item in the menu leads to a small window allowing the level of the game to be changed. The entries are fairly self-explanatory: ckick <icon>OK</icon> to set.
 
 </chapter>
 
