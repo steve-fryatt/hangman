@@ -225,7 +225,8 @@ adjust%=(q%!8=1)
 CASE menu_up% OF
  WHEN main_menu%
   CASE s1% OF
-   WHEN 1 : PROCshow_options(!q%,q%!4)
+   WHEN 1 : OSCLI("%Filer_Run <Hangman$Dir>.!Help")
+   WHEN 2 : PROCshow_options(!q%,q%!4)
   ENDCASE
 ENDCASE
 :

@@ -27,5 +27,6 @@ menu(main_menu, "Hangman") {
 	item("Info") {
 		d_box(program_info);
 	}
+	item("Help");
 	item("Options...");
 }
