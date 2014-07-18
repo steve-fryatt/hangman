@@ -27,6 +27,7 @@ REM Load Wimp Library, initialise set the error handler and poll until asked to 
 ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL;" ***" : END
 :
 LIBRARY "BASIC:WimpLib"
+LIBRARY "BASIC:Resources"
 LIBRARY "BASIC:Window"
 :
 REM These values get replaced by tokenize.
@@ -65,7 +66,7 @@ $b%="TASK"
 q%!4=0
 SYS "Wimp_Initialise",300,!b%,"Hangman",q%
 :
-resource_path$=FNterritory_resources("<Hangman$Dir>.Resources")
+resource_path$=FNresources_find_territory_folder("<Hangman$Dir>.Resources")
 :
 REM Load window templates and define windows.
 :
