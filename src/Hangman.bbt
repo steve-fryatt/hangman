@@ -27,6 +27,7 @@ REM Load Wimp Library, initialise set the error handler and poll until asked to 
 ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL;" ***" : END
 :
 LIBRARY "BASIC:WimpLib"
+LIBRARY "BASIC:Window"
 :
 REM These values get replaced by tokenize.
 :
@@ -116,7 +117,7 @@ PROCpick_new_word(min_word_length%,max_word_length%,number_of_guesses%)
 :
 REM Open the main window
 :
-PROCopen_window(main_wind%)
+PROCwindow_open(main_wind%)
 PROCput_caret_at_end(main_wind%,-1)
 ENDPROC
 :
@@ -203,8 +204,8 @@ CASE window% OF
      WHEN 7  : PROCincrement_icon_contents(options_wind%,5,22)
      WHEN 10 : PROCdecrement_icon_contents(options_wind%,9,1)
      WHEN 11 : PROCincrement_icon_contents(options_wind%,9,19)
-     WHEN 13 : PROCclose_window(options_wind%)
-     WHEN 14 : PROCstore_options : PROCclose_window(options_wind%)
+     WHEN 13 : PROCwindow_close(options_wind%)
+     WHEN 14 : PROCstore_options : PROCwindow_close(options_wind%)
     ENDCASE
   ENDCASE
 ENDCASE
@@ -578,7 +579,7 @@ DEF PROCshow_options(x%,y%)
 $FNicon_indirection(options_wind%,1)=STR$(min_word_length%)
 $FNicon_indirection(options_wind%,5)=STR$(max_word_length%)
 $FNicon_indirection(options_wind%,9)=STR$(number_of_guesses%)
-PROCopen_window_at(options_wind%,x%,y%)
+PROCwindow_open_at(options_wind%,x%,y%)
 ENDPROC
 :
 :
