@@ -27,6 +27,7 @@ REM Load Wimp Library, initialise set the error handler and poll until asked to 
 ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL;" ***" : END
 :
 LIBRARY "BASIC:WimpLib"
+LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Resources"
 LIBRARY "BASIC:Window"
 :
@@ -385,10 +386,10 @@ $FNicon_indirection(main_wind%,1)="Resign"
 word_colour%=letter_colour%
 highlight_colour%=newletter_colour%
 :
-PROCforce_icon_redraw(main_wind%,0)
-PROCforce_icon_redraw(main_wind%,1)
-PROCforce_icon_redraw(main_wind%,2)
-PROCforce_icon_redraw(main_wind%,3)
+PROCicon_redraw(main_wind%,0)
+PROCicon_redraw(main_wind%,1)
+PROCicon_redraw(main_wind%,2)
+PROCicon_redraw(main_wind%,3)
 ENDPROC
 :
 :
@@ -425,7 +426,7 @@ highlight_colour%=win_colour%
 :
 REM Redraw the button.
 :
-PROCforce_icon_redraw(main_wind%,1)
+PROCicon_redraw(main_wind%,1)
 ENDPROC
 :
 :
@@ -466,8 +467,8 @@ NEXT loop%
 :
 REM Redraw the screen.
 :
-PROCforce_icon_redraw(main_wind%,0)
-PROCforce_icon_redraw(main_wind%,1)
+PROCicon_redraw(main_wind%,0)
+PROCicon_redraw(main_wind%,1)
 ENDPROC
 :
 :
@@ -521,7 +522,7 @@ IF NOT FNletter_used(letter$) THEN
  IF letters_hit_now%=0 THEN
   PROCshow_letter_as_used(letter$)
   turns_left%-=1
-  PROCforce_icon_redraw(main_wind%,3)
+  PROCicon_redraw(main_wind%,3)
  ENDIF
  :
  REM Total the number of letters found.
@@ -531,7 +532,7 @@ ENDIF
 :
 REM Redraw the word.
 :
-PROCforce_icon_redraw(main_wind%,0)
+PROCicon_redraw(main_wind%,0)
 ENDPROC
 :
 :
@@ -568,7 +569,7 @@ IF FNalphabetic(l$) THEN
  ELSE
   MID$(used_letters2$,ASC(l$)-77,1)=l$
  ENDIF
- PROCforce_icon_redraw(main_wind%,2)
+ PROCicon_redraw(main_wind%,2)
 ENDIF
 ENDPROC
 :
