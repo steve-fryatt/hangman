@@ -326,7 +326,7 @@ SYS "Hourglass_On"
 :
 REPEAT
  SYS "Spell_GetWord",RND(dictionary_size%) TO ,word%
- word$=FNzero_string(word%)
+ SYS "XOS_GenerateError", word% TO word$
 UNTIL LEN(word$)>=min% AND LEN(word$)<=max%
 :
 SYS "Hourglass_Off"
