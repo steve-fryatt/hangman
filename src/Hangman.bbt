@@ -190,22 +190,22 @@ CASE window% OF
   CASE buttons% OF
    WHEN 1
     CASE icon% OF
-     WHEN 2  : PROCincrement_icon_contents(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
-     WHEN 3  : PROCdecrement_icon_contents(options_wind%,1,3)
-     WHEN 6  : PROCincrement_icon_contents(options_wind%,5,22)
-     WHEN 7  : PROCdecrement_icon_contents(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
-     WHEN 10 : PROCincrement_icon_contents(options_wind%,9,19)
-     WHEN 11 : PROCdecrement_icon_contents(options_wind%,9,1)
+     WHEN 2  : PROCicon_increment_value(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
+     WHEN 3  : PROCicon_decrement_value(options_wind%,1,3)
+     WHEN 6  : PROCicon_increment_value(options_wind%,5,22)
+     WHEN 7  : PROCicon_decrement_value(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
+     WHEN 10 : PROCicon_increment_value(options_wind%,9,19)
+     WHEN 11 : PROCicon_decrement_value(options_wind%,9,1)
      WHEN 14 : PROCstore_options
     ENDCASE
    WHEN 4
     CASE icon% OF
-     WHEN 2  : PROCdecrement_icon_contents(options_wind%,1,3)
-     WHEN 3  : PROCincrement_icon_contents(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
-     WHEN 6  : PROCdecrement_icon_contents(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
-     WHEN 7  : PROCincrement_icon_contents(options_wind%,5,22)
-     WHEN 10 : PROCdecrement_icon_contents(options_wind%,9,1)
-     WHEN 11 : PROCincrement_icon_contents(options_wind%,9,19)
+     WHEN 2  : PROCicon_decrement_value(options_wind%,1,3)
+     WHEN 3  : PROCicon_increment_value(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
+     WHEN 6  : PROCicon_decrement_value(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
+     WHEN 7  : PROCicon_increment_value(options_wind%,5,22)
+     WHEN 10 : PROCicon_decrement_value(options_wind%,9,1)
+     WHEN 11 : PROCicon_increment_value(options_wind%,9,19)
      WHEN 13 : PROCwindow_close(options_wind%)
      WHEN 14 : PROCstore_options : PROCwindow_close(options_wind%)
     ENDCASE
