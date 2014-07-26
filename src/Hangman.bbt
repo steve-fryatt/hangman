@@ -28,6 +28,7 @@ ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL
 :
 LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
+LIBRARY "BASIC:Menu"
 LIBRARY "BASIC:Resources"
 LIBRARY "BASIC:Template"
 LIBRARY "BASIC:Window"
@@ -89,10 +90,10 @@ $FNicon_indirection(info_wind%,6)=build_version$+" ("+build_date$+")"
 :
 REM Load menu definitions and create menus.
 :
+PROCmenu_initialise
 !b%=info_wind%
-PROCload_menu_block(resource_path$+"Menus", b%)
+PROCmenu_load_templates(resource_path$+"Menus", b%)
 main_menu%=!b%
-menu_up%=0 : REM This will contain the current menu.
 :
 REM Find the font we need to display the hangman text.
 :
@@ -185,7 +186,7 @@ CASE window% OF
       ENDIF
      OTHERWISE : PROCicon_put_caret_at_end(main_wind%,-1)
     ENDCASE
-   WHEN 2 : PROCdisplay_menu(main_menu%,mouse_x%,mouse_y%)
+   WHEN 2 : PROCmenu_create(main_menu%,mouse_x%,mouse_y%)
   ENDCASE
  WHEN options_wind%
   CASE buttons% OF
@@ -226,7 +227,7 @@ REM Set adjust% if the menu must be re-displayed (ie adjust selection).
 SYS "Wimp_GetPointerInfo",,q%
 adjust%=(q%!8=1)
 :
-CASE menu_up% OF
+CASE FNmenu_current_handle OF
  WHEN main_menu%
   CASE s1% OF
    WHEN 1 : OSCLI("%Filer_Run <Hangman$Dir>.!Help")
@@ -234,7 +235,7 @@ CASE menu_up% OF
   ENDCASE
 ENDCASE
 :
-IF adjust% THEN PROCdisplay_menu(menu_up%,0,0)
+IF adjust% THEN PROCmenu_create(FNmenu_current_handle,0,0)
 ENDPROC
 :
 :
