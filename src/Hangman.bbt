@@ -24,14 +24,16 @@ REM permissions and limitations under the Licence.
 :
 REM Load Wimp Library, initialise set the error handler and poll until asked to exit.
 :
-ON ERROR VDU 4 : PRINT TAB(0,0);"*** ERROR IN HANGMAN: ";REPORT$;" at line ";ERL;" ***" : END
-:
 LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Menu"
 LIBRARY "BASIC:Resources"
 LIBRARY "BASIC:Template"
+LIBRARY "BASIC:WimpError"
 LIBRARY "BASIC:Window"
+:
+PROCwimperror_initialise("Hangman", "!hangman")
+ON ERROR ON ERROR result% = FNwimperror_program : END
 :
 REM These values get replaced by tokenize.
 :
@@ -40,7 +42,7 @@ build_date$ = "19 Jun 2002"
 :
 PROCinitialise
 :
-ON ERROR IF FNerror("Hangman")=2 THEN quit%=TRUE
+ON ERROR quit% = FNwimperror_program
 :
 WHILE NOT quit%
  PROCpoll
