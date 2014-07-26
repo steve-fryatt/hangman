@@ -24,7 +24,6 @@ REM permissions and limitations under the Licence.
 :
 REM Load Wimp Library, initialise set the error handler and poll until asked to exit.
 :
-LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Menu"
 LIBRARY "BASIC:Resources"
