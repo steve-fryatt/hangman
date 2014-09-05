@@ -26,6 +26,7 @@ REM Load Wimp Library, initialise set the error handler and poll until asked to 
 :
 LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Menu"
+LIBRARY "BASIC:Message"
 LIBRARY "BASIC:Resources"
 LIBRARY "BASIC:Template"
 LIBRARY "BASIC:Url"
@@ -42,9 +43,9 @@ build_date$ = "19 Jun 2002"
 :
 PROCinitialise
 :
-ON ERROR quit% = FNwimperror_program
+ON ERROR Quit% = FNwimperror_program
 :
-WHILE NOT quit%
+WHILE NOT Quit%
  PROCpoll
 ENDWHILE
 :
@@ -55,81 +56,91 @@ END
 :
 REM ********************************************************************************************
 :
-:
-DEF PROCinitialise
+
 REM Initialise ourselves, internally and for the wimp.
 :
+DEF PROCinitialise
+LOCAL task_name$, task_sprite$, resource_path$
+
 REM Set up quit flags and data blocks.
-:
-quit%=FALSE
+
+Quit% = FALSE
+
 DIM a% 255, b% 4000, q% 255
-:
+
+resource_path$ = FNresources_find_territory_folder("<Hangman$Dir>.Resources")
+
+REM Load the messages file.
+
+PROCmessage_initialise(resource_path$ + "Messages")
+
+task_name$ = FNmessage_lookup("TaskName")
+task_sprite$ = FNmessage_lookup("TaskSpr")
+PROCwimperror_initialise(task_name$, task_sprite$)
+
 REM Register self with the wimp, asking for messages in q% to be sent to us.
-:
-$b%="TASK"
-!q%=&400C1
-q%!4=&4E383
-q%!8=&4AF80
-q%!12=0
-SYS "Wimp_Initialise",300,!b%,"Hangman",q%
-:
-resource_path$=FNresources_find_territory_folder("<Hangman$Dir>.Resources")
-:
+
+!q% = &400C1
+q%!4 = &4E383
+q%!8 = &4AF80
+q%!12 = 0
+SYS "Wimp_Initialise", 300, &4B534154, task_name$, q%
+
 REM Load window templates and define windows.
-:
-ind_size%=500
+
+ind_size% = 500
 DIM ind_data% ind_size%
-:
-PROCtemplate_open(resource_path$+"Templates")
-PROCtemplate_load("Main",b%,ind_data%,ind_size%,-1)
-SYS "Wimp_CreateWindow",,b% TO main_wind%
-PROCtemplate_load("Info",b%,ind_data%,ind_size%,-1)
-SYS "Wimp_CreateWindow",,b% TO info_wind%
-PROCtemplate_load("Options",b%,ind_data%,ind_size%,-1)
-SYS "Wimp_CreateWindow",,b% TO options_wind%
+
+PROCtemplate_open(resource_path$ + "Templates")
+PROCtemplate_load("Main", b%, ind_data%, ind_size%, -1)
+SYS "Wimp_CreateWindow",,b% TO MainWindow%
+PROCtemplate_load("Info", b%, ind_data%, ind_size%, -1)
+SYS "Wimp_CreateWindow",,b% TO InfoWindow%
+PROCtemplate_load("Options", b%, ind_data%, ind_size%, -1)
+SYS "Wimp_CreateWindow",,b% TO OptionsWindow%
 PROCtemplate_close
-:
-$FNicon_indirection(info_wind%,4)=CHR$(169) + " Stephen Fryatt, 1996-" + MID$(build_date$, 8)
-$FNicon_indirection(info_wind%,6)=build_version$+" ("+build_date$+")"
-:
+
+$FNicon_indirection(InfoWindow%, 4) = CHR$(169) + " Stephen Fryatt, 1996-" + MID$(build_date$, 8)
+$FNicon_indirection(InfoWindow%, 6) = build_version$ + " (" + build_date$ + ")"
+
 REM Load menu definitions and create menus.
-:
+
 PROCmenu_initialise
-!b%=info_wind%
-PROCmenu_load_templates(resource_path$+"Menus", b%)
-main_menu%=!b%
-:
+!b% = InfoWindow%
+PROCmenu_load_templates(resource_path$ + "Menus", b%)
+main_menu% = !b%
+
 REM Find the font we need to display the hangman text.
-:
-font_name$="Corpus.Bold"
-font_size1%=32
-font_size2%=12
-SYS "Font_FindFont",,font_name$,font_size1%*16,font_size1%*16 TO display_font%
-SYS "Font_FindFont",,font_name$,font_size2%*16,font_size2%*16 TO small_font%
-:
+
+font_name$ = "Corpus.Bold"
+font_size1% = 32
+font_size2% = 12
+SYS "Font_FindFont",,font_name$, font_size1%*16, font_size1%*16 TO display_font%
+SYS "Font_FindFont",,font_name$, font_size2%*16, font_size2%*16 TO small_font%
+
 REM Do the non-wimp initialiseation.
-:
+
 SYS "Spell_ImpressionInfo" TO ,dictionary_size%
-:
-min_word_length%=12
-max_word_length%=15
-number_of_guesses%=10
-:
-letter_colour%=7
-newletter_colour%=11
-fillin_colour%=10
-win_colour%=8
-dashmask_colour%=15
-:
-PROCpick_new_word(min_word_length%,max_word_length%,number_of_guesses%)
-:
+
+min_word_length% = 12
+max_word_length% = 15
+number_of_guesses% = 10
+
+letter_colour% = 7
+newletter_colour% = 11
+fillin_colour% = 10
+win_colour% = 8
+dashmask_colour% = 15
+
+PROCpick_new_word(min_word_length%, max_word_length%, number_of_guesses%)
+
 REM Open the main window
-:
-PROCwindow_open(main_wind%)
-PROCicon_put_caret_at_end(main_wind%,-1)
+
+PROCwindow_open(MainWindow%)
+PROCicon_put_caret_at_end(MainWindow%, -1)
 ENDPROC
-:
-:
+
+
 REM ********************************************************************************************
 :
 :
@@ -164,7 +175,7 @@ SYS "Wimp_Poll",0,b% TO reason%
 CASE reason% OF
  WHEN 1     : PROCwindow_redraw
  WHEN 2     : SYS "Wimp_OpenWindow",,b%
- WHEN 3     : SYS "Wimp_CloseWindow",,b% : quit%=TRUE
+ WHEN 3     : SYS "Wimp_CloseWindow",,b% : Quit%=TRUE
  WHEN 6     : PROChandle_mouse_clicks(b%!12,b%!16,b%!8,!b%,b%!4)
  WHEN 8     : PROChandle_key_presses(b%!24,!b%,b%!4)
  WHEN 9     : PROChandle_menu_selections(!b%,b%!4,b%!8,b%!12)
@@ -179,7 +190,7 @@ REM ****************************************************************************
 :
 DEF PROChandle_mouse_clicks(window%,icon%,buttons%,mouse_x%,mouse_y%)
 CASE window% OF
- WHEN main_wind%
+ WHEN MainWindow%
   CASE buttons% OF
    WHEN 1,4
     CASE icon% OF
@@ -189,36 +200,36 @@ CASE window% OF
       ELSE
        PROCpick_new_word(min_word_length%,max_word_length%,number_of_guesses%)
       ENDIF
-     OTHERWISE : PROCicon_put_caret_at_end(main_wind%,-1)
+     OTHERWISE : PROCicon_put_caret_at_end(MainWindow%,-1)
     ENDCASE
    WHEN 2 : PROCmenu_create(main_menu%,mouse_x%,mouse_y%)
   ENDCASE
- WHEN options_wind%
+ WHEN OptionsWindow%
   CASE buttons% OF
    WHEN 1
     CASE icon% OF
-     WHEN 2  : PROCicon_increment_value(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
-     WHEN 3  : PROCicon_decrement_value(options_wind%,1,3)
-     WHEN 6  : PROCicon_increment_value(options_wind%,5,22)
-     WHEN 7  : PROCicon_decrement_value(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
-     WHEN 10 : PROCicon_increment_value(options_wind%,9,19)
-     WHEN 11 : PROCicon_decrement_value(options_wind%,9,1)
+     WHEN 2  : PROCicon_increment_value(OptionsWindow%,1,VAL($FNicon_indirection(OptionsWindow%,5)))
+     WHEN 3  : PROCicon_decrement_value(OptionsWindow%,1,3)
+     WHEN 6  : PROCicon_increment_value(OptionsWindow%,5,22)
+     WHEN 7  : PROCicon_decrement_value(OptionsWindow%,5,VAL($FNicon_indirection(OptionsWindow%,1)))
+     WHEN 10 : PROCicon_increment_value(OptionsWindow%,9,19)
+     WHEN 11 : PROCicon_decrement_value(OptionsWindow%,9,1)
      WHEN 14 : PROCstore_options
     ENDCASE
    WHEN 4
     CASE icon% OF
-     WHEN 2  : PROCicon_decrement_value(options_wind%,1,3)
-     WHEN 3  : PROCicon_increment_value(options_wind%,1,VAL($FNicon_indirection(options_wind%,5)))
-     WHEN 6  : PROCicon_decrement_value(options_wind%,5,VAL($FNicon_indirection(options_wind%,1)))
-     WHEN 7  : PROCicon_increment_value(options_wind%,5,22)
-     WHEN 10 : PROCicon_decrement_value(options_wind%,9,1)
-     WHEN 11 : PROCicon_increment_value(options_wind%,9,19)
-     WHEN 13 : PROCwindow_close(options_wind%)
-     WHEN 14 : PROCstore_options : PROCwindow_close(options_wind%)
+     WHEN 2  : PROCicon_decrement_value(OptionsWindow%,1,3)
+     WHEN 3  : PROCicon_increment_value(OptionsWindow%,1,VAL($FNicon_indirection(OptionsWindow%,5)))
+     WHEN 6  : PROCicon_decrement_value(OptionsWindow%,5,VAL($FNicon_indirection(OptionsWindow%,1)))
+     WHEN 7  : PROCicon_increment_value(OptionsWindow%,5,22)
+     WHEN 10 : PROCicon_decrement_value(OptionsWindow%,9,1)
+     WHEN 11 : PROCicon_increment_value(OptionsWindow%,9,19)
+     WHEN 13 : PROCwindow_close(OptionsWindow%)
+     WHEN 14 : PROCstore_options : PROCwindow_close(OptionsWindow%)
     ENDCASE
   ENDCASE
- WHEN info_wind%
-  IF buttons% = 4 AND icon% = 8 THEN PROCurl_launch("http://www.stevefryatt.org.uk/software/games/") : PROCmenu_create(-1,0,0)
+ WHEN InfoWindow%
+  IF buttons% = 4 AND icon% = 8 THEN PROCurl_launch(FNmessage_lookup("SupportURL")) : PROCmenu_create(-1,0,0)
 ENDCASE
 ENDPROC
 :
@@ -267,7 +278,7 @@ REM ****************************************************************************
 :
 DEF PROChandle_wimp_message(message%)
  CASE message% OF
-  WHEN 0      : quit%=TRUE
+  WHEN 0      : Quit%=TRUE
   WHEN &400C1 : PROCrebind_fonts
   WHEN &4E383 : PROCurl_bounce(b%)
  ENDCASE
@@ -392,14 +403,14 @@ display_offset_y%=-128+((128-height%)/2)+14
 REM Finally set the game in motion and force the window to update to show the new word.
 :
 playing%=TRUE
-$FNicon_indirection(main_wind%,1)="Resign"
+$FNicon_indirection(MainWindow%,1)=FNmessage_lookup("Resign")
 word_colour%=letter_colour%
 highlight_colour%=newletter_colour%
 :
-PROCicon_redraw(main_wind%,0)
-PROCicon_redraw(main_wind%,1)
-PROCicon_redraw(main_wind%,2)
-PROCicon_redraw(main_wind%,3)
+PROCicon_redraw(MainWindow%,0)
+PROCicon_redraw(MainWindow%,1)
+PROCicon_redraw(MainWindow%,2)
+PROCicon_redraw(MainWindow%,3)
 ENDPROC
 :
 :
@@ -430,13 +441,13 @@ REM This procedure completes a finished word.
 REM Stop the game, update the button and the highlight colour.
 :
 playing%=FALSE
-$FNicon_indirection(main_wind%,1)="New Word"
+$FNicon_indirection(MainWindow%,1)=FNmessage_lookup("NewWord")
 word_colour%=win_colour%
 highlight_colour%=win_colour%
 :
 REM Redraw the button.
 :
-PROCicon_redraw(main_wind%,1)
+PROCicon_redraw(MainWindow%,1)
 ENDPROC
 :
 :
@@ -452,7 +463,7 @@ LOCAL loop%,letters_hit_now%
 REM Stop the game, show the highlighs in orange, and update the button.
 :
 playing%=FALSE
-$FNicon_indirection(main_wind%,1)="New Word"
+$FNicon_indirection(MainWindow%,1)=FNmessage_lookup("NewWord")
 word_colour%=letter_colour%
 highlight_colour%=fillin_colour%
 :
@@ -477,8 +488,8 @@ NEXT loop%
 :
 REM Redraw the screen.
 :
-PROCicon_redraw(main_wind%,0)
-PROCicon_redraw(main_wind%,1)
+PROCicon_redraw(MainWindow%,0)
+PROCicon_redraw(MainWindow%,1)
 ENDPROC
 :
 :
@@ -532,7 +543,7 @@ IF NOT FNletter_used(letter$) THEN
  IF letters_hit_now%=0 THEN
   PROCshow_letter_as_used(letter$)
   turns_left%-=1
-  PROCicon_redraw(main_wind%,3)
+  PROCicon_redraw(MainWindow%,3)
  ENDIF
  :
  REM Total the number of letters found.
@@ -542,7 +553,7 @@ ENDIF
 :
 REM Redraw the word.
 :
-PROCicon_redraw(main_wind%,0)
+PROCicon_redraw(MainWindow%,0)
 ENDPROC
 :
 :
@@ -579,7 +590,7 @@ IF FNalphabetic(l$) THEN
  ELSE
   MID$(used_letters2$,ASC(l$)-77,1)=l$
  ENDIF
- PROCicon_redraw(main_wind%,2)
+ PROCicon_redraw(MainWindow%,2)
 ENDIF
 ENDPROC
 :
@@ -588,10 +599,10 @@ REM ****************************************************************************
 :
 :
 DEF PROCshow_options(x%,y%)
-$FNicon_indirection(options_wind%,1)=STR$(min_word_length%)
-$FNicon_indirection(options_wind%,5)=STR$(max_word_length%)
-$FNicon_indirection(options_wind%,9)=STR$(number_of_guesses%)
-PROCwindow_open_at(options_wind%,x%,y%)
+$FNicon_indirection(OptionsWindow%,1)=STR$(min_word_length%)
+$FNicon_indirection(OptionsWindow%,5)=STR$(max_word_length%)
+$FNicon_indirection(OptionsWindow%,9)=STR$(number_of_guesses%)
+PROCwindow_open_at(OptionsWindow%,x%,y%)
 ENDPROC
 :
 :
@@ -599,7 +610,7 @@ REM ****************************************************************************
 :
 :
 DEF PROCstore_options
-min_word_length%=VAL($FNicon_indirection(options_wind%,1))
-max_word_length%=VAL($FNicon_indirection(options_wind%,5))
-number_of_guesses%=VAL($FNicon_indirection(options_wind%,9))
+min_word_length%=VAL($FNicon_indirection(OptionsWindow%,1))
+max_word_length%=VAL($FNicon_indirection(OptionsWindow%,5))
+number_of_guesses%=VAL($FNicon_indirection(OptionsWindow%,9))
 ENDPROC
