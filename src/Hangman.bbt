@@ -60,7 +60,7 @@ REM ****************************************************************************
 REM Initialise ourselves, internally and for the wimp.
 :
 DEF PROCinitialise
-LOCAL task_name$, task_sprite$, resource_path$
+LOCAL task_name$, task_sprite$, resource_path$, time%
 
 REM Set up quit flags and data blocks.
 
@@ -119,6 +119,10 @@ SYS "Font_FindFont",,font_name$, font_size1%*16, font_size1%*16 TO display_font%
 SYS "Font_FindFont",,font_name$, font_size2%*16, font_size2%*16 TO small_font%
 
 REM Do the non-wimp initialiseation.
+
+SYS "OS_ReadMonotonicTime" TO ,time%
+IF time% >= 0 THEN time% = &FFFFFFFF - time%
+time% = RND(time%)
 
 SYS "Spell_ImpressionInfo" TO ,dictionary_size%
 
