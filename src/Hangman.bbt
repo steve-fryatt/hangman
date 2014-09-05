@@ -28,6 +28,7 @@ LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Menu"
 LIBRARY "BASIC:Resources"
 LIBRARY "BASIC:Template"
+LIBRARY "BASIC:Url"
 LIBRARY "BASIC:WimpError"
 LIBRARY "BASIC:Window"
 :
@@ -67,14 +68,16 @@ REM Register self with the wimp, asking for messages in q% to be sent to us.
 :
 $b%="TASK"
 !q%=&400C1
-q%!4=0
+q%!4=&4E383
+q%!8=&4AF80
+q%!12=0
 SYS "Wimp_Initialise",300,!b%,"Hangman",q%
 :
 resource_path$=FNresources_find_territory_folder("<Hangman$Dir>.Resources")
 :
 REM Load window templates and define windows.
 :
-ind_size%=400
+ind_size%=500
 DIM ind_data% ind_size%
 :
 PROCtemplate_open(resource_path$+"Templates")
@@ -166,6 +169,7 @@ CASE reason% OF
  WHEN 8     : PROChandle_key_presses(b%!24,!b%,b%!4)
  WHEN 9     : PROChandle_menu_selections(!b%,b%!4,b%!8,b%!12)
  WHEN 17,18 : PROChandle_wimp_message(b%!16)
+ WHEN 19    : IF b%!16 = &4AF80 THEN PROCurl_bounce(b%)
 ENDCASE
 ENDPROC
 :
@@ -213,6 +217,8 @@ CASE window% OF
      WHEN 14 : PROCstore_options : PROCwindow_close(options_wind%)
     ENDCASE
   ENDCASE
+ WHEN info_wind%
+  IF buttons% = 4 AND icon% = 8 THEN PROCurl_launch("http://www.stevefryatt.org.uk/software/games/") : PROCmenu_create(-1,0,0)
 ENDCASE
 ENDPROC
 :
@@ -263,6 +269,7 @@ DEF PROChandle_wimp_message(message%)
  CASE message% OF
   WHEN 0      : quit%=TRUE
   WHEN &400C1 : PROCrebind_fonts
+  WHEN &4E383 : PROCurl_bounce(b%)
  ENDCASE
 ENDPROC
 :
