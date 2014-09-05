@@ -120,7 +120,7 @@ SYS "Font_FindFont",,font_name$, font_size2%*16, font_size2%*16 TO small_font%
 
 REM Do the non-wimp initialiseation.
 
-SYS "OS_ReadMonotonicTime" TO ,time%
+SYS "OS_ReadMonotonicTime" TO time%
 IF time% >= 0 THEN time% = &FFFFFFFF - time%
 time% = RND(time%)
 
