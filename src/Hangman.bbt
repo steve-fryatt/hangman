@@ -34,7 +34,7 @@ LIBRARY "BASIC:WimpError"
 LIBRARY "BASIC:Window"
 :
 PROCwimperror_initialise("Hangman", "!hangman")
-ON ERROR ON ERROR result% = FNwimperror_program : END
+ON ERROR result% = FNwimperror_program : END
 :
 REM These values get replaced by tokenize.
 :
