@@ -30,3 +30,31 @@ URLFailed:Could not find an application to launch the given URL.
 
 Resign:Resign
 NewWord:New Word
+
+# Interactive Help Messages
+
+Help.Main:\THangman application.|MIt plays a game of guessing words from a dictionary.
+Help.Main.Word:\THangman application.|MIt plays a game of guessing words from a dictionary.|M\Tword to be guessed.|M\Sgive the window input focus, then type letters to take guesses.
+Help.Main.Used:\THangman application.|MIt plays a game of guessing words from a dictionary.|MThis shows the letters which have been guessed incorrectly.
+Help.Main.Tries:\THangman application.|MIt plays a game of guessing words from a dictionary.|M\Tnumber of guesses which remain.
+Help.Main.Action:\THangman application.|MIt plays a game of guessing words from a dictionary.|M\Sresign from the current game or start a new one.
+
+Help.Info:\Tprogram information \w for the Hangman application.
+Help.Info.Website:\Tprogram information \w for the Hangman application.|M\Svisit its website for information and updates.
+
+Help.Options:\TOptions \w for Hangman.|MIt allows aspects of the game to be configured.
+Help.Options.OK:\Sset the options for the current session and close the \w.
+Help.Options.Cancel:\Sclose the \w and forget any changes made.
+Help.Options.Min:\Tminimum number of letters in a word to be guessed.
+Help.Options.MinDown:\Sdecrease the minimum word length by one.
+Help.Options.MinUp:\Sincrease the minimum word length by one.
+Help.Options.Max:\Tmaximum number of letters in a word to be guessed.
+Help.Options.MaxDown:\Sdecrease the maximum word length by one.
+Help.Options.MaxUp:\Sincrease the maximum word length by one.
+Help.Options.Tries:\Tnumber of guesses that the player will be given for each word.
+Help.Options.TriesDown:\Sdecrease the number of tries by one.
+Help.Options.TriesUp:\Sincrease the number of tries by one.
+
+Help.MainMenu.00:\Rto see information about Hangman and visit its website.
+Help.MainMenu.01:\Sread the Hangman documentation.
+Help.MainMenu.02:\Schange the settings for new games of Hangman.
