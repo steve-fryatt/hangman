@@ -313,6 +313,9 @@ CASE message%!32 OF
 	OTHERWISE		: root$ = ""
 ENDCASE
 
+REM Look up the help text, either as a window message of by checking the
+REM menus that belong to us.
+
 IF root$ <> "" THEN
 	suffix$ = FNicon_validation_command(message%!32, message%!36, "N")
 	IF suffix$ <> "" THEN root$ += "." + suffix$
@@ -320,12 +323,16 @@ IF root$ <> "" THEN
 ELSE
 	SYS "Wimp_GetMenuState", 1, q%, message%!32, message%!36
 	IF FNmenu_current_handle = MainMenu% THEN
-		root$ = "MainMenu."+RIGHT$("00" + STR$(!q%), 2)
+		root$ = "MainMenu." + RIGHT$("00" + STR$(!q%), 2)
 		found% = FNmessage_lookup_result("Help." + root$, message$)
 	ENDIF
 ENDIF
 
+REM If no message was found, give up now.
+
 IF NOT found% THEN ENDPROC
+
+REM If a message was found, send it back to the requestor.
 
 message%!12 = message%!8
 message%!16 = &503
