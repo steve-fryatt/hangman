@@ -12,6 +12,7 @@ Hangman - Desktop Word Game                                      Version $$versi
 
 (c) Stephen Fryatt, 1996-2014                  $$date$$
 =============================================================================
+
 </literal>
 
 
@@ -36,14 +37,19 @@ The necessary libraries and build tools can be found at <link ref="#url http://w
 
 
 
+<chapter title="Introduction" file="Intro">
+
+<cite>Hangman</cite> is a desktop implementation of the traditional word-guessing game. At the start of their turn, the player is presented with a random word in which all the letters have been replaced by dashes. Attempts must be made to guess the letters: if a guess is correct then that letter is shown in all its locations, but if wrong a &lsquo;life&rsquo; is lost. If the whole word has been guessed before all the available lives have gone, the player has won.
+
+</chapter>
+
+
 
 <chapter title="Installing Hangman" file="Install">
 
-<cite>Hangman</cite> can be run off a hard disc or floppy disc.
+To install <cite>Hangman</cite> on a hard disc, copy the <file>!Hangman</file> application to a suitable place on the disc.
 
-To install <cite>Hangman</cite> on a hard disc, copy the <file>!Hangman</file> application to a suitable place on your disc.
-
-<cite>Hangman</cite> requires Computer Concepts&rsquo; <cite>Impression Spell</cite> module to be loaded; if you don&rsquo;t already have this a copy is available from their website or some magazine cover CDs, in the <cite>Impression Junior</cite> package (for free).
+<cite>Hangman</cite> requires Computer Concepts&rsquo; <cite>Impression Spell</cite> module to be loaded before it will run. If you don't already have a copy suitable for your system, a 32-bit version can be found in the OMAP distributions of the <cite>Zap</cite> text editor at <link ref="http://www.tankstage.co.uk/software.html">http://www.tankstage.co.uk/software.html</link>.
 
 </chapter>
 
@@ -52,13 +58,13 @@ To install <cite>Hangman</cite> on a hard disc, copy the <file>!Hangman</file> a
 
 <chapter title="Using Hangman" file="Use">
 
-Double click on <file>!Hangman</file> to open the game window and ensure that the game has input focus by clicking within the window if necessary. At the top of the window a row of light blue dashes indicate the word to be guessed, while below these are a row of dark blue blocks which show how many chances are left.
+Once installed, double-click on <file>!Hangman</file> to open the game window; ensure that the game has input focus by clicking within the window if necessary. At the top of the window a row of light blue dashes indicates the word to be guessed, while below these are a row of dark blue blocks which show how many guesses are left.
 
-To guess a letter, press the key on the keyboard. If the letter is correct it will be placed in the correct position in the word; the last letter entered is highlighted in red. If the letter was wrong, one chance will be lost and the letter will be shown in the small box bottom left.
+To guess a letter, press the key on the keyboard. If the letter is correct it will be placed in position in the word; the last letter entered is highlighted in red. If the letter is wrong, one chance will be lost and the letter will be shown in the small box to the bottom-left of the window.
 
-If the player correctly guesses the word, then the letters will turn blue to show this. If the chances run out or the player resigns (by clicking on the <icon>Resign</icon> icon or pressing <key>return</key>) then the missing letters will be filled in in green.
+If the word is correctly guessed within the required number of tries, then the letters will turn blue to show this. If the chances run out or the player resigns (by clicking on the <icon>Resign</icon> icon or pressing <key>return</key>) then the missing letters will be filled in in green.
 
-To start a new word, click on the <icon>New&nbsp;Word</icon> icon or press <key>return</key>.
+To start a new word, click on the <icon>New&nbsp;Word</icon> icon or press <key>return</key> once the game has ended.
 
 </chapter>
 
@@ -66,14 +72,43 @@ To start a new word, click on the <icon>New&nbsp;Word</icon> icon or press <key>
 
 <chapter title="Game Options" file="Options">
 
-The <menu>Options...</menu> item in the menu leads to a small window allowing the level of the game to be changed. The entries are fairly self-explanatory: ckick <icon>OK</icon> to set.
+Selecting <menu>Options...</menu> from the <window>hangman</window> window menu will open the <window>hangman options</window> dialogue.
+
+The <icon>Minimum word lenth</icon> and <icon>Maximum word length</icon> fields set the range of word lengths which will be selected by the game: if these are set too high, then the range of words available will be limited. Note that it is not possible to set the minimum field to more than the maximum, or vice-versa: it might be necessary to adjust the two fields in turn to avoid a conflict.
+
+<icon>Number of guesses</icon> sets the number of incorrect guesses that the game will allow.
+
+Once set, click on <icon>OK</icon> to set the new values or <icon>Cancel</icon> to forget any changes made. The values here will only persist until the main <window>hangman</window> window is closed.
+
+</chapter>
+
+
+
+<chapter title="Version History">
+
+The following versions of <cite>Hangman</cite> have been available.
+
+
+<subhead title="1.00 (19 June 2002)">
+
+The original public release of <cite>Hangman</cite>.
+
+
+<subhead title="1.10 (6 September 2014)">
+
+Second public release; re-licensed under the EUPL.
+
+<list>
+<li><menu>Help</menu> menu item and <icon>Website</icon> button added to application.
+<li>Support for Interactive Help added.
+<li>Randomly seed <code>RND()</code> from OS timer when <cite>Hangman</cite> loads, to provide some variation in word selection (Ticket #493).
+</list>
 
 </chapter>
 
 
 
 <literal mode="Text">
-
 
 Updates and Contacting Me
 -------------------------
