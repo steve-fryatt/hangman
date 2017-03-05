@@ -10,7 +10,7 @@
 =============================================================================
 Hangman - Desktop Word Game                                      Version $$version$$
 
-(c) Stephen Fryatt, 1996-2014                  $$date$$
+(c) Stephen Fryatt, 1996-2017                  $$date$$
 =============================================================================
 
 </literal>
@@ -102,6 +102,15 @@ Second public release; re-licensed under the EUPL.
 <li><menu>Help</menu> menu item and <icon>Website</icon> button added to application.
 <li>Support for Interactive Help added.
 <li>Randomly seed <code>RND()</code> from OS timer when <cite>Hangman</cite> loads, to provide some variation in word selection (Ticket #493).
+</list>
+
+
+<subhead title="1.11 (5 March 2017)">
+
+Update to second public release.
+
+<list>
+<li>Fix <file>Help</file> so that <menu>Help</menu> menu items work correctly.
 </list>
 
 </chapter>
