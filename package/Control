@@ -7,7 +7,7 @@ Standards-Version: 0.6.0
 Environment: any
 Licence: Free
 Description: Guess words chosen by the computer
- This is a computer version of the 'classic' game, hangman. It doesn’t have
+ This is a computer version of the 'classic' game, hangman. It doesn't have
  the graphics (you don't see a little man getting executed), but it does have
  variable difficulty, a large dictionary (as it uses the Computer Concepts'
  Impression Spell module) and quite a good display.
