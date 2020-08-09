@@ -28,6 +28,9 @@ ARCHIVE := hangman
 
 APP := !Hangman
 
+PACKAGE := Hangman
+PACKAGELOC := Games
+
 SRCS := Hangman.bbt
 
 include $(SFTOOLS_MAKE)/Basic

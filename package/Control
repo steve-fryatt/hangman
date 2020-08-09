@@ -1,0 +1,19 @@
+Package: Hangman
+Version: 1.11-1
+Section: Games
+Priority: Optional
+Maintainer: Stephen Fryatt <info@stevefryatt.org.uk>
+Standards-Version: 0.6.0
+Environment: any
+Licence: Free
+Description: Guess words chosen by the computer
+ This is a computer version of the 'classic' game, hangman. It doesn’t have
+ the graphics (you don't see a little man getting executed), but it does have
+ variable difficulty, a large dictionary (as it uses the Computer Concepts'
+ Impression Spell module) and quite a good display.
+ .
+ A copy of the Impression Spell module will be required to use Hangman. A
+ version suitable for use on modern RISC OS machines is currently available
+ from the ZapSpell module inside the Zap text editor.
+Homepage: http://www.stevefryatt.org.uk/software/games/
+Components: Apps.Games.!Hangman (Movable)
