@@ -6,7 +6,7 @@ REM This file is part of Hangman:
 REM
 REM   http://www.stevefryatt.org.uk/software/
 REM
-REM Licensed under the EUPL, Version 1.1 only (the "Licence");
+REM Licensed under the EUPL, Version 1.2 only (the "Licence");
 REM You may not use this work except in compliance with the
 REM Licence.
 REM
@@ -443,7 +443,7 @@ NEXT loop%
 REM word_mask$ contains the dashes for unguessed letters, word_fill$ and word_last$
 REM contain a space for each letter.
 :
-word_mask$=STRING$(LEN(current_word$),"™") : REM The " " is in fact a "-"; zap doesn't show it!
+word_mask$=STRING$(LEN(current_word$),"ï¿½") : REM The " " is in fact a "-"; zap doesn't show it!
 word_fill$=STRING$(LEN(current_word$)," ")
 word_last$=STRING$(LEN(current_word$)," ")
 :
