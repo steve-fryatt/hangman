@@ -28,6 +28,7 @@ LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Menu"
 LIBRARY "BASIC:Message"
 LIBRARY "BASIC:Resources"
+LIBRARY "BASIC:String"
 LIBRARY "BASIC:Template"
 LIBRARY "BASIC:Url"
 LIBRARY "BASIC:WimpError"
@@ -60,7 +61,7 @@ REM ****************************************************************************
 REM Initialise ourselves, internally and for the wimp.
 :
 DEF PROCinitialise
-LOCAL task_name$, task_sprite$, resource_path$, time%
+LOCAL task_name$, task_sprite$, resources$, time%
 
 REM Set up quit flags and data blocks.
 
@@ -68,11 +69,18 @@ Quit% = FALSE
 
 DIM a% 255, b% 4000, q% 255
 
-resource_path$ = FNresources_find_territory_folder("<Hangman$Dir>.Resources")
+REM Locate the application resources.
+
+PROCresources_initialise_paths("<Hangman$Dir>.Resources", "UK", "Hangman$Language")
 
 REM Load the messages file.
 
-PROCmessage_initialise(resource_path$ + "Messages")
+resources$ = FNresources_find_file("Messages", &FFF)
+IF resources$ = "" THEN ERROR 255, "Unable to find Messages file"
+
+REM Load the messages file.
+
+PROCmessage_initialise(resources$)
 
 task_name$ = FNmessage_lookup("TaskName")
 task_sprite$ = FNmessage_lookup("TaskSpr")
@@ -89,10 +97,13 @@ SYS "Wimp_Initialise", 300, &4B534154, task_name$, q%
 
 REM Load window templates and define windows.
 
+resources$ = FNresources_find_file("Templates", &FEC)
+IF resources$ = "" THEN ERROR 255, "Unable to find Templates file"
+
 ind_size% = 520
 DIM ind_data% ind_size%
 
-PROCtemplate_open(resource_path$ + "Templates")
+PROCtemplate_open(resources$)
 PROCtemplate_load("Main", b%, ind_data%, ind_size%, -1)
 SYS "Wimp_CreateWindow",,b% TO MainWindow%
 PROCtemplate_load("Info", b%, ind_data%, ind_size%, -1)
@@ -106,9 +117,12 @@ $FNicon_indirection(InfoWindow%, 6) = build_version$ + " (" + build_date$ + ")"
 
 REM Load menu definitions and create menus.
 
+resources$ = FNresources_find_file("Menus", &FFD)
+IF resources$ = "" THEN ERROR 255, "Unable to find Menus file"
+
 PROCmenu_initialise
 !b% = InfoWindow%
-PROCmenu_load_templates(resource_path$ + "Menus", b%)
+PROCmenu_load_templates(resources$, b%)
 MainMenu% = !b%
 
 REM Find the font we need to display the hangman text.
