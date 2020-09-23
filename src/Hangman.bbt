@@ -457,7 +457,7 @@ NEXT loop%
 REM word_mask$ contains the dashes for unguessed letters, word_fill$ and word_last$
 REM contain a space for each letter.
 :
-word_mask$=STRING$(LEN(current_word$),"�") : REM The " " is in fact a "-"; zap doesn't show it!
+word_mask$=STRING$(LEN(current_word$),CHR$(153))
 word_fill$=STRING$(LEN(current_word$)," ")
 word_last$=STRING$(LEN(current_word$)," ")
 :
