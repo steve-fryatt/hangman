@@ -10,7 +10,7 @@
 =============================================================================
 Hangman - Desktop Word Game                                      Version $$version$$
 
-(c) Stephen Fryatt, 1996-2017                  $$date$$
+(c) Stephen Fryatt, 1996-2020                  $$date$$
 =============================================================================
 
 </literal>
@@ -96,7 +96,7 @@ The original public release of <cite>Hangman</cite>.
 
 <subhead title="1.10 (6 September 2014)">
 
-Second public release; re-licensed under the EUPL.
+Second stable release; re-licensed under the EUPL.
 
 <list>
 <li><menu>Help</menu> menu item and <icon>Website</icon> button added to application.
@@ -107,12 +107,21 @@ Second public release; re-licensed under the EUPL.
 
 <subhead title="1.11 (5 March 2017)">
 
-Update to second public release.
+Update to second stable release.
 
 <list>
 <li>Fix <file>!Help</file> so that <menu>Help</menu> menu items work correctly.
 </list>
 
+
+<subhead title="1.12 (23 September 2020)">
+
+Update to second stable release.
+
+<list>
+<li>Licence updated to EUPL&nbsp;v1.2.
+<li>Use ResConf-style system variables to identify resources.
+</list>
 </chapter>
 
 
@@ -129,6 +138,6 @@ Updates and Contacting Me
   on my website at http://www.stevefryatt.org.uk/software/
 
   Stephen Fryatt
-  email: steve@stevefryatt.org.uk
+  email: info@stevefryatt.org.uk
 </literal>
 
